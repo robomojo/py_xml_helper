@@ -14,7 +14,7 @@ def test_add_element():
     xml_root = ET.Element('root')
     xml_parent = ET.SubElement(xml_root, 'parent')
     xml_child_1 = ET.SubElement(xml_parent, 'child', attrib={'Name':'1'})
-    raw_xml = ET.tostring(xml_root, encoding='UTF-8', method='xml')
+    raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
 
@@ -32,7 +32,7 @@ def test_add_element():
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    utils.get_xml_from_file(f.name, debug=False, always_open=True)
 
     # close the file
     f.close()
@@ -46,7 +46,7 @@ def test_replace_elements():
     xml_root = ET.Element('root')
     xml_parent = ET.SubElement(xml_root, 'parent')
     xml_child_1 = ET.SubElement(xml_parent, 'child', attrib={'Name':'1'})
-    raw_xml = ET.tostring(xml_root, encoding='UTF-8', method='xml')
+    raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
 
@@ -61,7 +61,7 @@ def test_replace_elements():
     # add the children
     xml_helpers.replace(file_path=f.name, elements=[xml_child_2, xml_child_3], parent_element_tag='parent')
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    utils.get_xml_from_file(f.name, debug=False, always_open=True)
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
