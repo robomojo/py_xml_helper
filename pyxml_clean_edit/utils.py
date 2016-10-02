@@ -28,22 +28,47 @@ class SourceLines(object):
             return self.start + 1
         elif self.insertion_mode == EnumInsertionMode.End:
             return self.end
+    def is_multiline(self):
+        return self.start != self.end
 
-def get_sourcelines_of_element(file_path, element_tag):
+def has_attribs(file_path, line_index, attrib_matches):
+    '''
+    Attrib names/values can not contain spaces, but there can be any amount
+    of space between the attrib name and value.
+    '''
+    lines = []
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+    matches_needed = len(attrib_matches.keys())
+    matches = 0
+    # for i in xrange(line_index, len(lines)):
+    line = lines[line_index]
+    for k in attrib_matches.keys():
+        if line.find('{0}="{1}"'.format(k, attrib_matches[k])) > -1:
+            matches += 1
+    if matches == matches_needed:
+        return True
+    return False
+
+
+def get_sourcelines_of_element(file_path, element_tag, attrib_matches):
     srclines = SourceLines()
     currentline = 0
     with open(file_path, 'r') as f:
         for line in f.readlines():
-            # TODO: make work for dense xml
+            # TODO: make work within line columns better.
             FOUND_CHILD = line.find('<{0}'.format(element_tag)) > -1
+            ELEMENT_ENDS_THIS_LINE = line.find('>') > -1 
             SINGLE_LINE_ELEMENT = line.find('/>') > -1
             CLOSING_TAG = line.find('</{0}>'.format(element_tag)) > -1
-            if FOUND_CHILD:
-                srclines.start = currentline
-                srclines.startline = line
-                if SINGLE_LINE_ELEMENT:
-                    srclines.end = currentline
-                    srclines.endline = line
+            if FOUND_CHILD and ELEMENT_ENDS_THIS_LINE:
+                MATCHED_ATTRIBS = has_attribs(file_path, currentline, attrib_matches)
+                if MATCHED_ATTRIBS:
+                    srclines.start = currentline
+                    srclines.startline = line
+                    if SINGLE_LINE_ELEMENT:
+                        srclines.end = currentline
+                        srclines.endline = line
             if CLOSING_TAG:
                 srclines.end = currentline
                 srclines.endline = line
@@ -68,7 +93,7 @@ def guard(file_path, parent_element_tag):
     if not is_valid(file_path):
         raise StandardError('Can not parse xml file.')
     # ensure it has the parent element tag in it somewhere
-    if not contains(file_path, element_tag=parent_element_tag):
+    if parent_element_tag is not None and not contains(file_path, element_tag=parent_element_tag):
         raise StandardError('Can not find parent element tag')
 
 def contains(file_path, element_tag=None):
@@ -91,3 +116,25 @@ def is_valid(file_path):
         return True
     except ET.ParseError:
         return False
+
+def handle_tag_matches(tag_matches):
+    '''
+    Return tag_matches as a list of strings.
+    '''
+    if type(tag_matches) == str:
+        return [tag_matches]
+    elif type(tag_matches) == list:
+        for i in tag_matches:
+            if type(i) != str:
+                if type(i) == bool or type(i) == int or type(i) == unicode:
+                    i = str(bool)
+                else:
+                    raise StandardError('Unknown tag_match type {0} supplied. Expecting strings or a list of strings.')
+        return tag_matches
+    
+def handle_attrib_matches(attrib_matches):
+    '''
+    Return attrib_matches as a list of Dictionaries.
+    '''
+    # TODO: implement
+    return attrib_matches
