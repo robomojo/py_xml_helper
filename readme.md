@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/robomojo/pyxml_clean_edit.svg?branch=master)](https://travis-ci.org/robomojo/pyxml_clean_edit)
-# py_xml_helper
+# pyxml_clean_edit
 Python module for cleanly editing existing xml files.
 
 This aims to be a light-weight alternative to other solutions out there.
