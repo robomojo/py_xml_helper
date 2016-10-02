@@ -83,3 +83,6 @@ def replace_children(file_path, elements, parent_element_tag):
     # write it back
     with open(file_path, 'w') as f:
         f.write(''.join(lines))
+
+def contains(file_path, element_tag=None):
+    return utils.contains(file_path, element_tag)
