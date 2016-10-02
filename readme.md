@@ -11,5 +11,12 @@ You don't want to erase any human hand-edits and comments accidently, nor do you
 You don't always need to know why an xml file is structured a certain way - if you can get lucky and find your parent element, get in, and get out.
 You will probably be happy having a clean diff when you're done. 
 
+# Requirements
+This is currently targeted at Python 2.6 and 2.7
+
+# Usage
+TBD
+
 # Testing
 All the tests are made for the nose testing framework.
+
