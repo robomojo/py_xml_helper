@@ -137,4 +137,6 @@ def handle_attrib_matches(attrib_matches):
     Return attrib_matches as a list of Dictionaries.
     '''
     # TODO: implement
+    if type(attrib_matches) == dict:
+        return [attrib_matches]
     return attrib_matches
