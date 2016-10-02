@@ -84,5 +84,17 @@ def replace_children(file_path, elements, parent_element_tag):
     with open(file_path, 'w') as f:
         f.write(''.join(lines))
 
-def contains(file_path, element_tag=None):
-    return utils.contains(file_path, element_tag)
+def contains(file_path, tag_match=None, attrib_match=None):
+    '''
+    Kwargs:
+        tag_match: string of tag name (<Fruit> = 'Fruit')
+        attrib_match: dict of attribs (Type="Banana" = {'Type':'Banana'})
+    '''
+    # guard against common exceptions
+    utils.guard(file_path, None)
+    # ensure arg types
+    tag_match = utils.handle_tag_match(tag_match)
+    attrib_match = utils.handle_attrib_match(attrib_match)
+    # get sourcelines
+    srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match)
+    return srclines.is_valid()

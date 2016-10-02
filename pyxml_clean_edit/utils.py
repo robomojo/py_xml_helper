@@ -125,13 +125,20 @@ def handle_tag_matches(tag_matches):
         return [tag_matches]
     elif type(tag_matches) == list:
         for i in tag_matches:
-            if type(i) != str:
-                if type(i) == bool or type(i) == int or type(i) == unicode:
-                    i = str(bool)
-                else:
-                    raise StandardError('Unknown tag_match type {0} supplied. Expecting strings or a list of strings.')
+            i = handle_tag_match(i)
         return tag_matches
-    
+
+def handle_tag_match(tag_match):
+    '''
+    Return tag_match as a str or raise an error exception
+    '''
+    if type(tag_match) != str:
+        if type(tag_match) == bool or type(tag_match) == int or type(tag_match) == unicode:
+            tag_match = str(bool)
+        else:
+            raise StandardError('Unknown tag_match type {0} supplied. Expecting strings or a list of strings.'.format(tag_match))
+    return tag_match
+
 def handle_attrib_matches(attrib_matches):
     '''
     Return attrib_matches as a list of Dictionaries.
@@ -140,3 +147,8 @@ def handle_attrib_matches(attrib_matches):
     if type(attrib_matches) == dict:
         return [attrib_matches]
     return attrib_matches
+
+def handle_attrib_match(attrib_match):
+    if type(attrib_match) != dict:
+        raise StandardError('attrib_match should be a dictionary!')
+    return attrib_match
