@@ -74,8 +74,6 @@ def get_sourcelines_of_element(file_path, element_tag, attrib_matches):
                 srclines.end = currentline
                 srclines.endline = line
             currentline += 1
-    if not srclines.is_valid():
-        raise StandardError('Could not determine source lines for element tag')
     return srclines
 
 def get_leading_whitespace(line):
