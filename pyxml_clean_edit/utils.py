@@ -5,10 +5,11 @@ import xml.dom.minidom
 def get_parsed_xml(xml_object, leading_space=None):
     leading_space = '' if leading_space == None else leading_space
     str_xml = ''
-    raw_xml = ET.tostring(xml_object, encoding='UTF-8')
-    prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent='  ', newl='\n').split('\n')[1:-1]
-    for string in prettyXml:
-        str_xml = '{PREVIOUS}{INDENT}{NEW}\n'.format(PREVIOUS=str_xml, INDENT=leading_space, NEW=string)
+    if xml_object is not None:
+        raw_xml = ET.tostring(xml_object, encoding='UTF-8')
+        prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent='  ', newl='\n').split('\n')[1:-1]
+        for string in prettyXml:
+            str_xml = '{PREVIOUS}{INDENT}{NEW}\n'.format(PREVIOUS=str_xml, INDENT=leading_space, NEW=string)
     return str_xml
 
 class EnumInsertionMode(object):
