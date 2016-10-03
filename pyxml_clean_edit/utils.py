@@ -71,6 +71,7 @@ def get_sourcelines_of_element(file_path, element_tag, attrib_matches):
                         if MATCHED_ATTRIBS:
                             srclines.start = currentline
                             srclines.startline = line
+                            child_depth += 1
                             if SINGLE_LINE_ELEMENT:
                                 srclines.end = currentline
                                 srclines.endline = line
