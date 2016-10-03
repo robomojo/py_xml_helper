@@ -87,7 +87,7 @@ def replace(file_path=None, element=None, tag_match=None, attrib_match=None):
     # pop all the lines inbetween start and end
     if srclines.is_multiline():
         del lines[srclines.start:srclines.end]
-        lines.insert(srclines.get_insertion_index(), str_element)
+        lines.insert(srclines.start, str_element)
     else:
         del lines[srclines.start]
         lines.insert(srclines.start, str_element)
