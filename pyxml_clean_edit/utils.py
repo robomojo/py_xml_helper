@@ -56,25 +56,33 @@ def has_attribs(file_path, line_index, attrib_matches):
 def get_sourcelines_of_element(file_path, element_tag, attrib_matches):
     srclines = SourceLines()
     currentline = 0
+    child_depth = 0
     with open(file_path, 'r') as f:
         for line in f.readlines():
-            # TODO: make work within line columns better.
-            FOUND_CHILD = line.find('<{0}'.format(element_tag)) > -1
-            ELEMENT_ENDS_THIS_LINE = line.find('>') > -1 
-            SINGLE_LINE_ELEMENT = line.find('/>') > -1
-            CLOSING_TAG = line.find('</{0}>'.format(element_tag)) > -1
-            if FOUND_CHILD and ELEMENT_ENDS_THIS_LINE:
-                MATCHED_ATTRIBS = has_attribs(file_path, currentline, attrib_matches)
-                if MATCHED_ATTRIBS:
-                    srclines.start = currentline
-                    srclines.startline = line
-                    if SINGLE_LINE_ELEMENT:
+            if srclines.end is None:
+                # TODO: make work within line columns better.
+                FOUND_CHILD = line.find('<{0}'.format(element_tag)) > -1
+                ELEMENT_ENDS_THIS_LINE = line.find('>') > -1 
+                SINGLE_LINE_ELEMENT = line.find('/>') > -1
+                CLOSING_TAG = line.find('</{0}>'.format(element_tag)) > -1
+                if srclines.start is None:
+                    if FOUND_CHILD and ELEMENT_ENDS_THIS_LINE:
+                        MATCHED_ATTRIBS = has_attribs(file_path, currentline, attrib_matches)
+                        if MATCHED_ATTRIBS:
+                            srclines.start = currentline
+                            srclines.startline = line
+                            if SINGLE_LINE_ELEMENT:
+                                srclines.end = currentline
+                                srclines.endline = line
+                else:
+                    if FOUND_CHILD and not SINGLE_LINE_ELEMENT: # it's a child
+                        child_depth += 1
+                    if child_depth > 0 and CLOSING_TAG: # child end
+                        child_depth -= 1
+                    if child_depth == 0 and CLOSING_TAG:
                         srclines.end = currentline
                         srclines.endline = line
-            if CLOSING_TAG:
-                srclines.end = currentline
-                srclines.endline = line
-            currentline += 1
+                currentline += 1
     return srclines
 
 def get_leading_whitespace(line):
