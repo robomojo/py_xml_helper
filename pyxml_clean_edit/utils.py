@@ -155,3 +155,8 @@ def handle_attrib_match(attrib_match):
     if type(attrib_match) != dict:
         raise StandardError('attrib_match should be a dictionary!')
     return attrib_match
+
+def handle_elements(elements):
+    if type(elements) != list:
+        elements = [elements]
+    return elements

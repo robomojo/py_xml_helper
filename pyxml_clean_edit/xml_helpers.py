@@ -11,6 +11,7 @@ def add(file_path=None, elements=None, tag_match=None, attrib_match=None):
     # guard against common exceptions
     utils.guard(file_path)
     # ensure arg types
+    elements = utils.handle_elements(elements)
     tag_match = utils.handle_tag_match(tag_match)
     attrib_match = utils.handle_attrib_match(attrib_match)
     # get the sourcelines
@@ -71,6 +72,7 @@ def replace_children(file_path, elements, tag_match=None, attrib_match=None):
     # ensure arg types
     tag_match = utils.handle_tag_match(tag_match)
     attrib_match = utils.handle_attrib_match(attrib_match)
+    elements = utils.handle_elements(elements)
     # get the sourcelines
     srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match)
     # get a list of lines
