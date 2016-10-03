@@ -63,6 +63,38 @@ def remove(file_path=None, tag_matches=None, attrib_matches=None):
     with open(file_path, 'w') as f:
         f.write(''.join(lines))
 
+def replace(file_path=None, element=None, tag_match=None, attrib_match=None):
+    '''
+    Replace the found element with a new element.
+    '''
+    # guard against common exceptions
+    utils.guard(file_path)
+    # ensure arg types
+    tag_match = utils.handle_tag_match(tag_match)
+    attrib_match = utils.handle_attrib_match(attrib_match)
+    if type(element) is not ET.Element:
+        raise StandardError('expecting element to be of type ET.Element')
+    # get the sourcelines
+    srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match)
+    # get a list of lines
+    lines = []
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+    # derive leading space from target line
+    leading_space = utils.get_leading_whitespace(lines[srclines.get_insertion_index()])
+    # get the clip as a list
+    str_element = utils.get_parsed_xml(element, leading_space=leading_space)
+    # pop all the lines inbetween start and end
+    if srclines.is_multiline():
+        del lines[srclines.start:srclines.end]
+        lines.insert(srclines.get_insertion_index(), str_element)
+    else:
+        del lines[srclines.start]
+        lines.insert(srclines.start, str_element)
+    # write it back
+    with open(file_path, 'w') as f:
+        f.write(''.join(lines))
+
 def replace_children(file_path, elements, tag_match=None, attrib_match=None):
     '''
     Replace all the child elements of the found element.

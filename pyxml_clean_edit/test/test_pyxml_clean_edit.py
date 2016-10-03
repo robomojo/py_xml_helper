@@ -73,6 +73,69 @@ def test_replace_child_elements():
     # test
     assert(len(new_xml_root.findall('parent/child')) == 2)
 
+def test_replace_child_elements_with_subelement():
+    # make an xml
+    xml_root = ET.Element('root')
+    xml_parent = ET.SubElement(xml_root, 'parent')
+    xml_subparent = ET.SubElement(xml_parent, 'children')
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'1'})
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'2'})
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'3'})
+    raw_xml = ET.tostring(xml_root)
+    prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
+    f = tempfile.NamedTemporaryFile(delete=False)
+
+    # write it
+    with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+
+    # replace with None
+    xml_helpers.replace_children(file_path=f.name, elements=None, tag_match='parent')
+
+    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+
+    # try to find the children
+    new_xml_root = ET.parse(f.name).getroot()
+
+    # close the file
+    f.close()
+    unlink(f.name)
+
+    # test
+    assert(len(new_xml_root.findall('parent/child')) == 0)
+
+def test_replace_element():
+    # make an xml
+    xml_root = ET.Element('root')
+    xml_parent = ET.SubElement(xml_root, 'parent')
+    xml_subparent = ET.SubElement(xml_parent, 'children')
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'1'})
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'2'})
+    ET.SubElement(xml_subparent, 'child', attrib={'Name':'3'})
+    raw_xml = ET.tostring(xml_root)
+    prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
+    f = tempfile.NamedTemporaryFile(delete=False)
+
+    # write it
+    with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+
+    # replace with None
+    xml_helpers.replace(file_path=f.name, element=ET.Element('imposter'), tag_match='child', attrib_match={'Name':'2'})
+
+    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+
+    # try to find the children
+    new_xml_root = ET.parse(f.name).getroot()
+
+    # close the file
+    f.close()
+    unlink(f.name)
+
+    # test
+    assert(len(new_xml_root.findall('parent/children/child')) == 2)
+    assert(len(new_xml_root.findall('parent/children/imposter')) == 1)
+
 def test_remove_elements():
     # make an xml
     xml_root = ET.Element('root')
