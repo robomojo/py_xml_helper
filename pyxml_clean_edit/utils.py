@@ -1,3 +1,4 @@
+import os
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
 
@@ -85,16 +86,16 @@ def get_leading_whitespace(line):
         val.append(string)
     return ''.join(val)
 
-def guard(file_path, parent_element_tag):
+def guard(file_path):
     '''
     Standard guard exceptions for all user functions
     '''
-    # ensure we have the parent element tag
+    # ensure file exists
+    if not os.path.exists(file_path):
+        raise StandardError('File path does not exist!')
+    # ensure valid xml
     if not is_valid(file_path):
         raise StandardError('Can not parse xml file.')
-    # ensure it has the parent element tag in it somewhere
-    if parent_element_tag is not None and not contains(file_path, element_tag=parent_element_tag):
-        raise StandardError('Can not find parent element tag')
 
 def contains(file_path, element_tag=None):
     '''
@@ -149,6 +150,8 @@ def handle_attrib_matches(attrib_matches):
     return attrib_matches
 
 def handle_attrib_match(attrib_match):
+    if attrib_match is None:
+        attrib_match = {}
     if type(attrib_match) != dict:
         raise StandardError('attrib_match should be a dictionary!')
     return attrib_match

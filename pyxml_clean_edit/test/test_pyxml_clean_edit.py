@@ -27,7 +27,7 @@ def test_add_element():
     xml_child_3 = ET.Element('child', attrib={'Name':'3'})
 
     # add the children
-    xml_helpers.add(file_path=f.name, elements=[xml_child_2, xml_child_3], parent_element_tag='parent')
+    xml_helpers.add(file_path=f.name, elements=[xml_child_2, xml_child_3], tag_match='parent')
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -59,7 +59,7 @@ def test_replace_child_elements():
     xml_child_3 = ET.Element('child', attrib={'Name':'3'})
 
     # add the children
-    xml_helpers.replace_children(file_path=f.name, elements=[xml_child_2, xml_child_3], parent_element_tag='parent')
+    xml_helpers.replace_children(file_path=f.name, elements=[xml_child_2, xml_child_3], tag_match='parent')
 
     utils.get_xml_from_file(f.name, debug=False, always_open=False)
 
@@ -91,7 +91,7 @@ def test_remove_elements():
     # add the children
     xml_helpers.remove(file_path=f.name, tag_matches='child', attrib_matches=[{'Name':'2'}, {'Name':'3'}])
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=True)
+    utils.get_xml_from_file(f.name, debug=False, always_open=False)
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
