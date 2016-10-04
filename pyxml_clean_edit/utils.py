@@ -166,6 +166,8 @@ def handle_attrib_match(attrib_match):
     return attrib_match
 
 def handle_elements(elements):
+    if elements is None:
+        elements = []
     if type(elements) != list:
         elements = [elements]
     for e in elements:
