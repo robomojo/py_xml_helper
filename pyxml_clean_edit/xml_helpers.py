@@ -86,7 +86,7 @@ def replace(file_path=None, element=None, tag_match=None, attrib_match=None):
     str_element = utils.get_parsed_xml(element, leading_space=leading_space)
     # pop all the lines inbetween start and end
     if srclines.is_multiline():
-        del lines[srclines.start:srclines.end]
+        del lines[srclines.start:srclines.end+1]
         lines.insert(srclines.start, str_element)
     else:
         del lines[srclines.start]
