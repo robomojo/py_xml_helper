@@ -1,3 +1,4 @@
+import sys
 import os
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
@@ -167,4 +168,17 @@ def handle_attrib_match(attrib_match):
 def handle_elements(elements):
     if type(elements) != list:
         elements = [elements]
+    for e in elements:
+        e = handle_element(e)
     return elements
+
+def handle_element(element):
+    # 2.6 ET.Element is a function and not a type
+    if sys.version_info < (2,7):
+        if not isinstance(element, ET._Element):
+            raise StandardError('expecting element to be of type ET.Element')
+        return element
+    else:
+        if not isinstance(element, ET.Element):
+            raise StandardError('expecting element to be of type ET.Element')
+        return element

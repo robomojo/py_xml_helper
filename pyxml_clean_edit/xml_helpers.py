@@ -72,8 +72,7 @@ def replace(file_path=None, element=None, tag_match=None, attrib_match=None):
     # ensure arg types
     tag_match = utils.handle_tag_match(tag_match)
     attrib_match = utils.handle_attrib_match(attrib_match)
-    if not isinstance(element, ET.Element):
-        raise StandardError('expecting element to be of type ET.Element')
+    element = utils.handle_element(element)
     # get the sourcelines
     srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match)
     # get a list of lines
