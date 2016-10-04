@@ -33,6 +33,9 @@ class SourceLines(object):
             return self.end
     def is_multiline(self):
         return self.start != self.end
+    def validate(self):
+        if not self.is_valid():
+            raise StandardError('SourceLines object invalid')
 
 def has_attribs(file_path, line_index, attrib_matches):
     '''
@@ -54,34 +57,46 @@ def has_attribs(file_path, line_index, attrib_matches):
     return False
 
 
-def get_sourcelines_of_element(file_path, element_tag, attrib_matches):
+def get_sourcelines_of_element(file_path, element_tag, attrib_matches, sub_tags):
     srclines = SourceLines()
     currentline = 0
     child_depth = 0
+    state = 0
+    sub_tag_index = 0
     with open(file_path, 'r') as f:
         for line in f.readlines():
-            if srclines.end is None:
+            if state < 3:
                 # TODO: make work within line columns better.
-                FOUND_CHILD = line.find('<{0}'.format(element_tag)) > -1
+                FOUND_TAG = line.find('<{0}'.format(element_tag)) > -1
                 ELEMENT_ENDS_THIS_LINE = line.find('>') > -1 
                 SINGLE_LINE_ELEMENT = line.find('/>') > -1
                 CLOSING_TAG = line.find('</{0}>'.format(element_tag)) > -1
-                if srclines.start is None:
-                    if FOUND_CHILD and ELEMENT_ENDS_THIS_LINE:
+                FOUND_SUB_TAG = False if len(sub_tags) == 0 else line.find('<{0}'.format(sub_tags[sub_tag_index])) > -1
+                FOUND_CLOSING_SUB_TAG = False if len(sub_tags) == 0 else line.find('</{0}'.format(sub_tags[sub_tag_index])) > -1
+                if state == 0:
+                    # find the element using the element tag and attrib matches
+                    if FOUND_TAG and ELEMENT_ENDS_THIS_LINE:
                         MATCHED_ATTRIBS = has_attribs(file_path, currentline, attrib_matches)
                         if MATCHED_ATTRIBS:
-                            srclines.start = currentline
-                            srclines.startline = line
+                            state += 1
                             child_depth += 1
-                            if SINGLE_LINE_ELEMENT:
-                                srclines.end = currentline
-                                srclines.endline = line
-                else:
-                    if FOUND_CHILD and not SINGLE_LINE_ELEMENT: # it's a child
+                            if len(sub_tags) == 0:
+                                srclines.start = currentline
+                                srclines.startline = line
+                                if SINGLE_LINE_ELEMENT:
+                                    srclines.end = currentline
+                                    srclines.endline = line
+                if state == 1:
+                    # find the element in sub_tags
+                    if FOUND_SUB_TAG:
+                        sub_tag_index += 1
+                if state == 2:
+                    # find the closing tag
+                    if FOUND_TAG and not SINGLE_LINE_ELEMENT: # it's a child
                         child_depth += 1
                     if child_depth > 0 and CLOSING_TAG: # child end
                         child_depth -= 1
-                    if child_depth == 0 and CLOSING_TAG:
+                    if child_depth == wanted_child_depth and CLOSING_TAG:
                         srclines.end = currentline
                         srclines.endline = line
                 currentline += 1
@@ -184,3 +199,12 @@ def handle_element(element):
         if not isinstance(element, ET.Element):
             raise StandardError('expecting element to be of type ET.Element')
         return element
+
+def handle_sub_tags(sub_tags):
+    if sub_tags is None:
+        sub_tags = []
+    if type(sub_tags) == str:
+        sub_tags = [sub_tags]
+    if type(sub_tags) is not list:
+        raise StandardError('expecting sub_tags to be an list of strings')
+    return sub_tags

@@ -1,0 +1,17 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Nose Debug",
+			"type": "python",
+			"request": "launch",
+			"stopOnEntry": false,
+			"program": "${workspaceRoot}/pyxml_clean_edit/test/debug_run.py",
+			"debugOptions": [
+				"WaitOnAbnormalExit",
+				"WaitOnNormalExit",
+				"RedirectOutput"
+			]
+		}
+	]
+}

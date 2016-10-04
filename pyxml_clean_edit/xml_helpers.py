@@ -4,7 +4,7 @@ import xml.dom.minidom
 from . import utils
 reload(utils)
 
-def add(file_path=None, elements=None, tag_match=None, attrib_match=None):
+def add(file_path=None, elements=None, tag_match=None, attrib_match=None, sub_tags=None):
     '''
     Add new sub-elements the found element.
     '''
@@ -14,9 +14,11 @@ def add(file_path=None, elements=None, tag_match=None, attrib_match=None):
     elements = utils.handle_elements(elements)
     tag_match = utils.handle_tag_match(tag_match)
     attrib_match = utils.handle_attrib_match(attrib_match)
+    sub_tags = utils.handle_sub_tags(sub_tags)
     # get the sourcelines
-    srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match)
+    srclines = utils.get_sourcelines_of_element(file_path, tag_match, attrib_match, sub_tags)
     srclines.insertion_mode = utils.EnumInsertionMode.End
+    srclines.validate()
     # get a list of lines
     lines = []
     with open(file_path, 'r') as f:

@@ -165,3 +165,33 @@ def test_remove_elements():
 
     # test
     assert(len(new_xml_root.findall('parent/child')) == 1)
+
+def test_add_element_using_depth():
+    # make an xml
+    xml_root = ET.Element('root')
+    xml_parent = ET.SubElement(xml_root, 'parent')
+    xml_children = ET.SubElement(xml_parent, 'children')
+    ET.SubElement(xml_parent, 'child', attrib={'Name':'1'})
+    ET.SubElement(xml_parent, 'child', attrib={'Name':'2'})
+    raw_xml = ET.tostring(xml_root)
+    prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
+    f = tempfile.NamedTemporaryFile(delete=False)
+
+    # write it
+    with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+
+    # add the children
+    xml_helpers.add(file_path=f.name, elements=ET.Element('inserted'), tag_match='parent', child_depth=1)
+
+    utils.get_xml_from_file(f.name, debug=False, always_open=True)
+
+    # try to find the children
+    new_xml_root = ET.parse(f.name).getroot()
+
+    # close the file
+    f.close()
+    unlink(f.name)
+
+    # test
+    assert(len(new_xml_root.findall('parent/child')) == 1)
