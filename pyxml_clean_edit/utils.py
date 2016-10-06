@@ -65,7 +65,7 @@ def get_sourcelines_of_element(file_path, element_tag, attrib_matches, sub_tags)
     sub_tag_index = 0
     with open(file_path, 'r') as f:
         for line in f.readlines():
-            if state < 3:
+            if state < 4:
                 # TODO: make work within line columns better.
                 FOUND_TAG = line.find('<{0}'.format(element_tag)) > -1
                 ELEMENT_ENDS_THIS_LINE = line.find('>') > -1 
@@ -79,26 +79,44 @@ def get_sourcelines_of_element(file_path, element_tag, attrib_matches, sub_tags)
                         MATCHED_ATTRIBS = has_attribs(file_path, currentline, attrib_matches)
                         if MATCHED_ATTRIBS:
                             state += 1
-                            child_depth += 1
                             if len(sub_tags) == 0:
+                                child_depth += 1
                                 srclines.start = currentline
                                 srclines.startline = line
                                 if SINGLE_LINE_ELEMENT:
                                     srclines.end = currentline
                                     srclines.endline = line
-                if state == 1:
-                    # find the element in sub_tags
+                            else:
+                                state += 1
+                if state == 1: # finish normally by finding the closing tag
+                    if srclines.start != currentline:
+                        if FOUND_TAG and not SINGLE_LINE_ELEMENT: # it's a child
+                            child_depth += 1
+                        if child_depth > 0 and CLOSING_TAG: # child end
+                            child_depth -= 1
+                        if child_depth == 0 and CLOSING_TAG:
+                            srclines.end = currentline
+                            srclines.endline = line
+                if state == 2: # find the sub_tag
                     if FOUND_SUB_TAG:
                         sub_tag_index += 1
-                if state == 2:
-                    # find the closing tag
-                    if FOUND_TAG and not SINGLE_LINE_ELEMENT: # it's a child
-                        child_depth += 1
-                    if child_depth > 0 and CLOSING_TAG: # child end
-                        child_depth -= 1
-                    if child_depth == wanted_child_depth and CLOSING_TAG:
-                        srclines.end = currentline
-                        srclines.endline = line
+                        sub_tag_index = min(sub_tag_index, len(sub_tags)-1)
+                        if sub_tag_index == len(sub_tags)-1:
+                            child_depth += 1
+                            srclines.start = currentline
+                            srclines.startline = line
+                            state = 3
+                if state == 3: # finish by finding closing sub_tag
+                    if srclines.start != currentline:
+                        if FOUND_SUB_TAG and not SINGLE_LINE_ELEMENT: # it's a child
+                            child_depth += 1
+                        if child_depth > 0 and FOUND_CLOSING_SUB_TAG: # child end
+                            child_depth -= 1
+                        if child_depth == 0 and FOUND_CLOSING_SUB_TAG:
+                            srclines.end = currentline
+                            srclines.endline = line
+                            if srclines.is_valid(): 
+                                break
                 currentline += 1
     return srclines
 

@@ -1,6 +1,7 @@
 '''
 tests for the various ways we might want to add things to an xml file.
 '''
+import os
 from os import unlink
 import xml.etree.ElementTree as ET
 import tempfile
@@ -17,9 +18,12 @@ def test_add_element():
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
         t_file.write(prettyXml)
 
     # make some new children
@@ -29,14 +33,16 @@ def test_add_element():
     # add the children
     xml_helpers.add(file_path=f.name, elements=[xml_child_2, xml_child_3], tag_match='parent')
 
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
+
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
-
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
 
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
     assert(len(new_xml_root.findall('parent/child')) == 3)
@@ -49,9 +55,12 @@ def test_replace_child_elements():
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
         t_file.write(prettyXml)
 
     # make some new children
@@ -61,7 +70,7 @@ def test_replace_child_elements():
     # add the children
     xml_helpers.replace_children(file_path=f.name, elements=[xml_child_2, xml_child_3], tag_match='parent')
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -69,6 +78,8 @@ def test_replace_child_elements():
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
     assert(len(new_xml_root.findall('parent/child')) == 2)
@@ -84,15 +95,18 @@ def test_replace_child_elements_with_subelement():
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
         t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
+        t_file.write(prettyXml)
 
     # replace with None
-    xml_helpers.replace_children(file_path=f.name, elements=None, tag_match='parent')
+    # xml_helpers.replace_children(file_path=f.name, elements=None, tag_match='parent')
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -100,6 +114,8 @@ def test_replace_child_elements_with_subelement():
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
     assert(len(new_xml_root.findall('parent/child')) == 0)
@@ -115,15 +131,18 @@ def test_replace_element():
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
         t_file.write(prettyXml)
 
     # replace with None
     xml_helpers.replace(file_path=f.name, element=ET.Element('imposter'), tag_match='child', attrib_match={'Name':'2'})
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -131,6 +150,8 @@ def test_replace_element():
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
     assert(len(new_xml_root.findall('parent/children/child')) == 2)
@@ -146,15 +167,18 @@ def test_remove_elements():
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
+        t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
         t_file.write(prettyXml)
 
     # add the children
     xml_helpers.remove(file_path=f.name, tag_matches='child', attrib_matches=[{'Name':'2'}, {'Name':'3'}])
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=False)
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -162,29 +186,44 @@ def test_remove_elements():
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
     assert(len(new_xml_root.findall('parent/child')) == 1)
 
-def test_add_element_using_depth():
+def test_add_element_using_subtags():
     # make an xml
     xml_root = ET.Element('root')
     xml_parent = ET.SubElement(xml_root, 'parent')
     xml_children = ET.SubElement(xml_parent, 'children')
-    ET.SubElement(xml_parent, 'child', attrib={'Name':'1'})
-    ET.SubElement(xml_parent, 'child', attrib={'Name':'2'})
+    xml_child1 = ET.SubElement(xml_children, 'child', attrib={'Name':'1'})
+    xml_child1_children = ET.SubElement(xml_child1, 'children')
+    xml_child1_subchild = ET.SubElement(xml_child1_children, 'child', attrib={'Name':'1'})
+    xml_child1_subchild = ET.SubElement(xml_child1_children, 'child', attrib={'Name':'2'})
+    xml_child1_subchild = ET.SubElement(xml_child1_children, 'child', attrib={'Name':'3'})
+    xml_child2 = ET.SubElement(xml_children, 'child', attrib={'Name':'2'})
+    xml_child2_children = ET.SubElement(xml_child2, 'children')
+    xml_child2_subchild = ET.SubElement(xml_child2_children, 'child', attrib={'Name':'1'})
+    xml_child2_subchild = ET.SubElement(xml_child2_children, 'child', attrib={'Name':'2'})
+    xml_child2_subchild = ET.SubElement(xml_child2_children, 'child', attrib={'Name':'3'})
+    xml_children = ET.SubElement(xml_root, 'children')
+    xml_child3 = ET.SubElement(xml_children, 'child', attrib={'Name':'1'})
     raw_xml = ET.tostring(xml_root)
     prettyXml = xml.dom.minidom.parseString(raw_xml).toprettyxml(indent="    ", newl='\n')
     f = tempfile.NamedTemporaryFile(delete=False)
+    f2 = tempfile.NamedTemporaryFile(delete=False)
 
     # write it
     with open(f.name, mode='w') as t_file:
         t_file.write(prettyXml)
+    with open(f2.name, mode='w') as t_file:
+        t_file.write(prettyXml)
 
     # add the children
-    xml_helpers.add(file_path=f.name, elements=ET.Element('inserted'), tag_match='parent', child_depth=1)
+    xml_helpers.add(file_path=f.name, elements=ET.Element('inserted'), tag_match='parent', sub_tags='children')
 
-    utils.get_xml_from_file(f.name, debug=False, always_open=True)
+    # os.system('"C:\\Program Files\\KDiff3\\kdiff3.exe" {0} {1}'.format(f2.name, f.name))
 
     # try to find the children
     new_xml_root = ET.parse(f.name).getroot()
@@ -192,6 +231,8 @@ def test_add_element_using_depth():
     # close the file
     f.close()
     unlink(f.name)
+    f2.close()
+    unlink(f2.name)
 
     # test
-    assert(len(new_xml_root.findall('parent/child')) == 1)
+    assert(len(new_xml_root.findall('parent/children/inserted')) == 1)
