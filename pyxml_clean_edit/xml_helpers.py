@@ -7,6 +7,10 @@ reload(utils)
 def add(file_path=None, elements=None, tag_match=None, attrib_match=None, sub_tags=None):
     '''
     Add new sub-elements the found element.
+    Kwargs:
+        tag_match: string of tag name (<Fruit> = 'Fruit')
+        attrib_match: dict of attribs (Type="Banana" = {'Type':'Banana'})
+        sub_tags: list of tags describing a sub path (Foo/bar/child = ['Foo', 'bar', 'child'])
     '''
     # guard against common exceptions
     utils.guard(file_path)
@@ -68,6 +72,10 @@ def remove(file_path=None, tag_matches=None, attrib_matches=None, sub_tags=None)
 def replace(file_path=None, element=None, tag_match=None, attrib_match=None, sub_tags=None):
     '''
     Replace the found element with a new element.
+    Kwargs:
+        tag_match: string of tag name (<Fruit> = 'Fruit')
+        attrib_match: dict of attribs (Type="Banana" = {'Type':'Banana'})
+        sub_tags: list of tags describing a sub path (Foo/bar/child = ['Foo', 'bar', 'child'])
     '''
     # guard against common exceptions
     utils.guard(file_path)
@@ -100,6 +108,10 @@ def replace(file_path=None, element=None, tag_match=None, attrib_match=None, sub
 def replace_children(file_path, elements, tag_match=None, attrib_match=None, sub_tags=None):
     '''
     Replace all the child elements of the found element.
+    Kwargs:
+        tag_match: string of tag name (<Fruit> = 'Fruit')
+        attrib_match: dict of attribs (Type="Banana" = {'Type':'Banana'})
+        sub_tags: list of tags describing a sub path (Foo/bar/child = ['Foo', 'bar', 'child'])
     '''
     # guard against common exceptions
     utils.guard(file_path)
@@ -134,6 +146,7 @@ def contains(file_path, tag_match=None, attrib_match=None, sub_tags=None):
     Kwargs:
         tag_match: string of tag name (<Fruit> = 'Fruit')
         attrib_match: dict of attribs (Type="Banana" = {'Type':'Banana'})
+        sub_tags: list of tags describing a sub path (Foo/bar/child = ['Foo', 'bar', 'child'])
     '''
     # guard against common exceptions
     utils.guard(file_path)
