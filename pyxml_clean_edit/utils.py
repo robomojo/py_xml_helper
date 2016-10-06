@@ -97,6 +97,8 @@ def get_sourcelines_of_element(file_path, element_tag, attrib_matches, sub_tags)
                         if child_depth == 0 and CLOSING_TAG:
                             srclines.end = currentline
                             srclines.endline = line
+                            if srclines.is_valid(): 
+                                break
                 if state == 2: # find the sub_tag
                     if FOUND_SUB_TAG:
                         sub_tag_index += 1
