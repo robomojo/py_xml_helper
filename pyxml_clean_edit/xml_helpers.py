@@ -62,7 +62,7 @@ def remove(file_path=None, tag_matches=None, attrib_matches=None, sub_tags=None)
     # pop all the lines inbetween start and end
     for srclines in srcline_objs:
         if srclines.is_multiline():
-            del lines[srclines.start:srclines.end]
+            del lines[srclines.start:srclines.end+1]
         else:
             del lines[srclines.start]
     # write it back
